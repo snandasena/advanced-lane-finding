@@ -199,6 +199,7 @@ def visualize_warped_images(img, src, dst):
     ax1.set_title('Undistorted Image', fontsize=18)
     ax2.imshow(unwarped)
     ax2.set_title('Unwarped Image', fontsize=18)
+    plt.show()
     return unwarped
 
 
@@ -214,11 +215,18 @@ def apply_color_filter(uwimg):
     unwarp_R = uwimg[:, :, 0]
     unwarp_G = uwimg[:, :, 1]
     unwarp_B = uwimg[:, :, 2]
+
     unwarp_HSV = cv2.cvtColor(uwimg, cv2.COLOR_RGB2HSV)
     unwarp_H = unwarp_HSV[:, :, 0]
     unwarp_S = unwarp_HSV[:, :, 1]
     unwarp_V = unwarp_HSV[:, :, 2]
-    fig, axs = plt.subplots(1, 6, figsize=(16, 16))
+
+    unwarp_HSL = cv2.cvtColor(uwimg, cv2.COLOR_RGB2HLS)
+    unwarp_HSL_H = unwarp_HSL[:, :, 0]
+    unwarp_HSL_S = unwarp_HSL[:, :, 1]
+    unwarp_HSL_V = unwarp_HSL[:, :, 2]
+
+    fig, axs = plt.subplots(3, 3, figsize=(16, 16))
     axs = axs.ravel()
     axs[0].imshow(unwarp_R, cmap='gray')
     axs[0].set_title('RGB R-channel', fontsize=12)
@@ -226,6 +234,7 @@ def apply_color_filter(uwimg):
     axs[1].set_title('RGB G-Channel', fontsize=12)
     axs[2].imshow(unwarp_B, cmap='gray')
     axs[2].set_title('RGB B-channel', fontsize=12)
+
     axs[3].imshow(unwarp_H, cmap='gray')
     axs[3].set_title('HSV H-Channel', fontsize=12)
     axs[4].imshow(unwarp_S, cmap='gray')
@@ -233,17 +242,26 @@ def apply_color_filter(uwimg):
     axs[5].imshow(unwarp_V, cmap='gray')
     axs[5].set_title('HSV V-Channel', fontsize=12)
 
+    axs[6].imshow(unwarp_HSL_H, cmap='gray')
+    axs[6].set_title('HSL H-Channel', fontsize=12)
+    axs[7].imshow(unwarp_HSL_S, cmap='gray')
+    axs[7].set_title('HSL S-channel', fontsize=12)
+    axs[8].imshow(unwarp_HSL_V, cmap='gray')
+    axs[8].set_title('HSL V-Channel', fontsize=12)
 
-for img in warped_images:
+    plt.show()
+
+
+for img in warped_images[:1]:
     apply_color_filter(img)
 
 
 #### Thresolding
 
-def abs_sobel_thresh(img, orient='x', thresh_min=0, thresh_max=255):
+def abs_sobel_thresh(img, orient='x', thresh_min=20, thresh_max=100):
     # Apply the following steps to img
     # 1) Convert to grayscale
-    gray = grayscale(img)
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2Lab)[:, :, 0]
     # 2) Take the derivative in x or y given orient = 'x' or 'y'
     dx = 1 if orient == 'x' else 0
     dy = 1 if orient == 'y' else 0
@@ -260,7 +278,7 @@ def abs_sobel_thresh(img, orient='x', thresh_min=0, thresh_max=255):
     return binary_sobel
 
 
-def apply_sobel_threshold(unwarp_img, min_thresh=0, max_thresh=255):
+def apply_sobel_threshold(unwarp_img, min_thresh, max_thresh):
     """
 
     :param unwarp_img:
@@ -268,19 +286,18 @@ def apply_sobel_threshold(unwarp_img, min_thresh=0, max_thresh=255):
     :param max_thresh:
     :return:
     """
-    cv2.imshow("temp", unwarp_img)
-    cv2.waitKey(0)
+
     abs_sobel = abs_sobel_thresh(unwarp_img, 'x', min_thresh, max_thresh)
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 16))
     ax1.imshow(unwarp_img)
     ax1.set_title('Unwarped Image', fontsize=18)
-    ax2.imshow(abs_sobel)
-    cv2.imshow("temp", abs_sobel)
-    cv2.waitKey(0)
+    ax2.imshow(abs_sobel, cmap='gray')
     ax2.set_title('Sobel Absolute', fontsize=18)
+    plt.show()
+
 
 min_thresh = 20
 max_thresh = 100
 
 for img in warped_images[:1]:
-    apply_sobel_threshold(img)
+    apply_sobel_threshold(img, min_thresh, max_thresh)
