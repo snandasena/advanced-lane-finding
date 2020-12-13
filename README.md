@@ -17,8 +17,9 @@ The goals / steps of this project are the following:
 
 Image processing pipeline
 ---
-Following flow chart will be described how this image processing pipeline development thing happening advanced computer vision techniques.
+Following flow chart will be described how this image processing pipeline development thing happening advanced computer vision techniques.  
 
+![](resources/image-processing-pipeline.svg)
 
 Camera calibration
 ---
