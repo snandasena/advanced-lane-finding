@@ -18,3 +18,4 @@ The goals / steps of this project are the following:
 Camera calibration
 ---
 
+Camera resectioning determines which incoming light is associated with each pixel on the resulting image [[Wikipedia](https://en.wikipedia.org/wiki/Camera_resectioning)]
