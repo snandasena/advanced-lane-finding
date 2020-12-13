@@ -92,3 +92,26 @@ Selected **destination** coordinates.
 Here height and width are recpectively number of rows and number of colomn in an raw image. Following is an image with drawan polygon by using **source** points.
 
 ![](resources/selected-points-image.png )
+
+##### Step 02:
+Apply OpenCV `cv2.getPerspectiveTransform` function to select a region as **bird-eye** view. Following function was used to warpe raw images.
+
+```python
+def unwarp(img, src, dst):
+    """
+    This is used to select a region from a given undistortion image as bird eye perspective.
+    
+    :param img - Distortion corrected image
+    :param src - source 
+    :param dst - destination
+    :return - warped image, transform matrix, and inverse
+    """
+    h,w = img.shape[:2]
+    # use cv2.getPerspectiveTransform() to get M, the transform matrix, and Minv, the inverse
+    M = cv2.getPerspectiveTransform(src, dst)
+    Minv = cv2.getPerspectiveTransform(dst, src)
+    # use cv2.warpPerspective() to warp your image to a top-down view
+    warped = cv2.warpPerspective(img, M, (w,h), flags=cv2.INTER_LINEAR)
+    return warped, M, Minv
+    
+```    
