@@ -170,6 +170,18 @@ def extract_lab_color_spaces(uwimg):
 ```    
 I have applied above functions to detect lane lines edges from road images. Following are the results that I got with each color filters. I have tested two different images to detect lane lines.
 
-##### RGB color spaces results
+##### RGB color space results
 ![](resources/rgb-test-1.png)
 ![](resources/rgb-test-2.png)
+
+##### HSV color space results
+![](resources/hsv-test-1.png)
+![](resources/hsv-test-2.png)
+
+##### HSL color space results
+![](resources/hsl-test-1.png)
+![](resources/hsl-test-2.png)
+
+##### LAB color space results
+![](resources/lab-test-1.png)
+![](resources/lab-test-2.png)
