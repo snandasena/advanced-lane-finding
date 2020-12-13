@@ -88,4 +88,6 @@ Selected **source** points:
 `p1 = (575, 465)` `p2 = (705, 465)` `p3 = (255, 685)` `p4 = (1050, 685)`   
 Selected **destination** coordinates.  
 `pd1 =(450, 0)` `pd2 = (width - 450, 0)` `pd3 = (450, height)` `pd4 = (width - 450, height)`  
-Here height and width are recpectively number of rows and number of colomn in an raw image.
+Here height and width are recpectively number of rows and number of colomn in an raw image. Following is an image with drawan polygon by using **source** points.
+
+![](resources/selected-points-image.png )
