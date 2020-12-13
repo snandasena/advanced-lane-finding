@@ -24,6 +24,35 @@ Following flow chart will be described how this image processing pipeline develo
 Camera calibration
 ---
 
-Camera resectioning determines which incoming light is associated with each pixel on the resulting image [[Wikipedia](https://en.wikipedia.org/wiki/Camera_resectioning)]. Before calibrated images, chessboard was detected by using OpenCV `cv2.findChessboardCorners` function. Following are the detected chessboard results. Red reactangle highlighted were not detected as chessbords. 
+Camera resectioning determines which incoming light is associated with each pixel on the resulting image [[Wikipedia](https://en.wikipedia.org/wiki/Camera_resectioning)]. Before calibrated images, chessboard was detected from provided chessboard iamges by using OpenCV `cv2.findChessboardCorners` function. Following are the detected chessboard results. Red reactangle highlighted were not detected as chessbords. 
 
 ![](resources/calibrated-imgs.png)
+
+Here is the function that was used to find chessboard from images.
+
+```python
+# prepare objects points
+objp = np.zeros((6*9, 3), np.float32)
+objp[:,:2] = np.mgrid[0:9, 0:6].T.reshape(-1,2)
+
+# Arrays to store object points and iamg points from all the images
+objpoints = []
+imgpoints = []
+
+def find_and_draw_chessboard(img, pattern_size= (9,6)):
+    gray = grayscale(img)
+
+    # find the chessboard corners
+    ret, corners = cv2.findChessboardCorners(gray, pattern_size, None)
+
+    # if found, add object points, image points
+    if ret:
+        objpoints.append(objp)
+        imgpoints.append(corners)
+
+        # draw and display the corners
+        cv2.drawChessboardCorners(img, pattern_size, corners, ret)
+    
+    # if not found, return same input image
+    return img
+```       
