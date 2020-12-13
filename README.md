@@ -60,3 +60,16 @@ def find_and_draw_chessboard(img, pattern_size= (9,6)):
     # if not found, return same input image
     return img
 ```       
+
+**Following OpenCV function can was used to calibrate above chessboard found images**
+
+```python
+# Do Camera calibration given objects' points and images' points
+# mtx - camera calibrated matrix
+# dist - distortion cofficients
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints,img_size, None, None)
+
+```
+Above `mtx` and `dist` will be used to undistort images in the pipeline.
+
+```
