@@ -78,4 +78,47 @@ Above `mtx` and `dist` will be used to undistort images in the pipeline.
 `cv2.undistort` can be used to corret distortion of images. Following are the sample images to show undistortion
 
 ![](resources/undistorted.png)
+![](resources/undistort-2.png)
 
+Perspective transformation
+---
+Perspective transfomation can be done with following steps.
+##### Step 01: 
+Select four source coordation points from given image and these points were used for all other as well with a generic adgusment.  
+Selected **source** points:  
+`p1 = (575, 465)` `p2 = (705, 465)` `p3 = (255, 685)` `p4 = (1050, 685)`   
+Selected **destination** coordinates.  
+`pd1 =(450, 0)` `pd2 = (width - 450, 0)` `pd3 = (450, height)` `pd4 = (width - 450, height)`  
+Here height and width are recpectively number of rows and number of colomn in an raw image. Following is an image with drawan polygon by using **source** points.
+
+![](resources/selected-points-image.png )
+
+##### Step 02:
+Apply OpenCV `cv2.getPerspectiveTransform` function to select a region as **bird-eye** view. Following function was used to warpe raw images.
+
+```python
+# define source and destination points for tranform
+src = np.float32([p1, p2, p3, p4])
+dst = np.float32([pd1, pd2, pd3, pd4])
+
+def unwarp(img, source=src, desctination=dst):
+    """
+    This is used to select a region from a given undistortion image as bird eye perspective.
+    
+    :param img - Distortion corrected image
+    :param src - source 
+    :param dst - destination
+    :return - warped image, transform matrix, and inverse
+    """
+    h,w = img.shape[:2]
+    # use cv2.getPerspectiveTransform() to get M, the transform matrix, and Minv, the inverse
+    M = cv2.getPerspectiveTransform(src, dst)
+    Minv = cv2.getPerspectiveTransform(dst, src)
+    # use cv2.warpPerspective() to warp your image to a top-down view
+    warped = cv2.warpPerspective(img, M, (w,h), flags=cv2.INTER_LINEAR)
+    return warped, M, Minv
+    
+```    
+Here is the sample result of above function.
+
+![](resources/unwarped-img.png)
