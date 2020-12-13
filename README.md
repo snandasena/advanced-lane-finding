@@ -131,3 +131,41 @@ On road lane line images, we have to detect two major colors such that yellow an
 
 ![](resources/color-venn-dia.png)
 
+Following functions were used to extract color channels from color spaces.
+
+```python
+# These utilitis are used to extract different color channels from different color spaces.
+
+# Extract R,G, and B color channels from RGB color space.
+def extract_rgb_color_spaces(uwimg):
+    unwarp_R = uwimg[:, :, 0]
+    unwarp_G = uwimg[:, :, 1]
+    unwarp_B = uwimg[:, :, 2]
+    return unwarp_R,unwarp_G,unwarp_B
+
+# Extract H,S, and V color channels from HSV color space.
+def extract_hsv_color_spaces(uwimg):
+    unwarp_HSV = cv2.cvtColor(uwimg, cv2.COLOR_RGB2HSV)
+    unwarp_H = unwarp_HSV[:, :, 0]
+    unwarp_S = unwarp_HSV[:, :, 1]
+    unwarp_V = unwarp_HSV[:, :, 2]
+    return unwarp_H,unwarp_S,unwarp_V
+
+# Extract H,S, and L color channels from HSL color space.
+def extract_hsl_color_spaces(uwimg):
+    unwarp_HSL = cv2.cvtColor(uwimg, cv2.COLOR_RGB2HLS)
+    unwarp_HSL_H = unwarp_HSL[:, :, 0]
+    unwarp_HSL_S = unwarp_HSL[:, :, 1]
+    unwarp_HSL_L = unwarp_HSL[:, :, 2]
+    return unwarp_HSL_H,unwarp_HSL_S,unwarp_HSL_L
+    
+# Extract L,A, and B color channels from LAB color space.
+def extract_lab_color_spaces(uwimg):
+    unwarped_LAB = cv2.cvtColor(uwimg, cv2.COLOR_RGB2Lab)
+    unwarp_L = unwarped_LAB[:,:,0]
+    unwarp_A = unwarped_LAB[:,:,1]
+    unwarp_B = unwarped_LAB[:,:,2]
+    return unwarp_L, unwarp_A,unwarp_B
+    
+```    
+    
