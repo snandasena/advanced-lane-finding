@@ -15,7 +15,62 @@ The goals / steps of this project are the following:
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
+Image processing pipeline
+---
+Following flow chart will be described how this image processing pipeline development thing happening advanced computer vision techniques.  
+
+![](resources/image-processing-pipeline.svg)
+
 Camera calibration
 ---
 
-Camera resectioning determines which incoming light is associated with each pixel on the resulting image [[Wikipedia](https://en.wikipedia.org/wiki/Camera_resectioning)]
+Camera resectioning determines which incoming light is associated with each pixel on the resulting image [[Wikipedia](https://en.wikipedia.org/wiki/Camera_resectioning)]. 
+
+##### Find and draw chessboard
+
+Before calibration images, chessboard was detected from provided chessboard iamges by using OpenCV `cv2.findChessboardCorners` function. Following are the detected chessboard results. Red reactangle highlighted were not detected as chessbords. 
+
+![](resources/calibrated-imgs.png)
+
+Here is the function that was used to find chessboard from images.
+
+```python
+# prepare objects points
+objp = np.zeros((6*9, 3), np.float32)
+objp[:,:2] = np.mgrid[0:9, 0:6].T.reshape(-1,2)
+
+# Arrays to store object points and iamg points from all the images
+objpoints = []
+imgpoints = []
+
+def find_and_draw_chessboard(img, pattern_size= (9,6)):
+    gray = grayscale(img)
+
+    # find the chessboard corners
+    ret, corners = cv2.findChessboardCorners(gray, pattern_size, None)
+
+    # if found, add object points, image points
+    if ret:
+        objpoints.append(objp)
+        imgpoints.append(corners)
+
+        # draw and display the corners
+        cv2.drawChessboardCorners(img, pattern_size, corners, ret)
+    
+    # if not found, return same input image
+    return img
+```       
+
+**Following OpenCV function was used to calibrate above chessboard found images**
+
+```python
+# Do Camera calibration given objects' points and images' points
+# mtx - camera calibrated matrix
+# dist - distortion cofficients
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints,img_size, None, None)
+
+```
+Above `mtx` and `dist` will be used to undistort images in the pipeline.
+
+##### Distortion correction
+**Image distortion** occurs when a camera looks at 3D objects in the real world and transforms them into a 2D image; this transformation isn’t perfect. Distortion actually changes what the shape and size of these 3D objects appear to be. So, the first step in analyzing camera images, is to undo this distortion so that you can get correct and useful information out of them.
