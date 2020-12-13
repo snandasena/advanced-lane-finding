@@ -15,6 +15,11 @@ The goals / steps of this project are the following:
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
+Image processing pipeline
+---
+Following flow chart will be described how this image processing pipeline development thing happening advanced computer vision techniques.
+
+
 Camera calibration
 ---
 
