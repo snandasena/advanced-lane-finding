@@ -24,4 +24,6 @@ Following flow chart will be described how this image processing pipeline develo
 Camera calibration
 ---
 
-Camera resectioning determines which incoming light is associated with each pixel on the resulting image [[Wikipedia](https://en.wikipedia.org/wiki/Camera_resectioning)]
+Camera resectioning determines which incoming light is associated with each pixel on the resulting image [[Wikipedia](https://en.wikipedia.org/wiki/Camera_resectioning)]. Before calibrated images, chessboard was detected by using OpenCV `cv2.findChessboardCorners` function. Following are the detected chessboard results. Red reactangle highlighted were not detected as chessbords. 
+
+![](resources/calibrated-imgs.png)
