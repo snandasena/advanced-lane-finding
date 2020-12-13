@@ -86,5 +86,5 @@ Perspective transfomation can do with following steps.
 01. Select four source coordation points from given image and these points were used for all other as well with a generic adgusment.  
 Selected **source** points:  
 `p1 = (575, 465)` `p2 = (705, 465)` `p3 = (255, 685)` `p4 = (1050, 685)`   
-Selected **destination** coordinates:  
+Selected **destination** coordinates. Here height and width are recpectively number of rows and number of colomn in an raw image:  
 `pd1 =(450, 0)` `pd2 = (width - 450, 0)` `pd3 = (450, height)` `pd4 = (width - 450, height)`
