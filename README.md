@@ -185,3 +185,7 @@ I have applied above functions to detect lane lines edges from road images. Foll
 ##### LAB color space results
 ![](resources/lab-test-1.png)
 ![](resources/lab-test-2.png)
+
+##### Color spaces conclutions
+LAB color space B was perfomed well to detect yellow lane lines from the roads images. For white lane lines, we have few options to select color channels. HSL S was perfomed well to detect white lane lines from road images.
+
