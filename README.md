@@ -127,6 +127,7 @@ Here is the sample result of above function.
 
 Working with colour spaces and channels
 ---
-On road lane line images, we have to detect two major colors such that yellow and white. By seeing bellow color venn diagram we can get some idea about how other colors are making with three major colors.
+On road lane line images, we have to detect two major colors such that yellow and white. By seeing bellow color venn diagram we can get some idea about how other colors are making with three major colors. I have tested with four color spaces sush that RGB, HSV, HSL, and LAB. 
 
 ![](resources/color-venn-dia.png)
+
