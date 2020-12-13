@@ -78,4 +78,5 @@ Above `mtx` and `dist` will be used to undistort images in the pipeline.
 `cv2.undistort` can be used to corret distortion of images. Following are the sample images to show undistortion
 
 ![](resources/undistorted.png)
+![](resources/undistort-2.png)
 
