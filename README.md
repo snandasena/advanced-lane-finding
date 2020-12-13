@@ -119,3 +119,6 @@ def unwarp(img, source=src, desctination=dst):
     return warped, M, Minv
     
 ```    
+Here is the sample result of above function.
+
+![](resources/unwarped-img.png)
