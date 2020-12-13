@@ -61,7 +61,7 @@ def find_and_draw_chessboard(img, pattern_size= (9,6)):
     return img
 ```       
 
-**Following OpenCV function can was used to calibrate above chessboard found images**
+**Following OpenCV function was used to calibrate above chessboard found images**
 
 ```python
 # Do Camera calibration given objects' points and images' points
