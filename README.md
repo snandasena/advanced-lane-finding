@@ -82,8 +82,9 @@ Above `mtx` and `dist` will be used to undistort images in the pipeline.
 
 Perspective transformation
 ---
-Perspective transfomation can do with following steps.
-01. Select four source coordation points from given image and these points were used for all other as well with a generic adgusment.  
+Perspective transfomation can be done with following steps.
+##### Step 01: 
+Select four source coordation points from given image and these points were used for all other as well with a generic adgusment.  
 Selected **source** points:  
 `p1 = (575, 465)` `p2 = (705, 465)` `p3 = (255, 685)` `p4 = (1050, 685)`   
 Selected **destination** coordinates.  
