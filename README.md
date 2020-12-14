@@ -231,3 +231,54 @@ Following are the some of results after applying above filter.
 
 ![](resources/sobel-abs-test-3.png)
 ![](resources/sobel-abs-test-2.png)
+
+#### Sobel direction of the gradient
+The magnitude, or absolute value, of the gradient is just the square root of the squares of the individual x and y gradients. For a gradient in both the **x** and **y** directions, the magnitude is the square root of the sum of the squares. Following function was used to calculate direction of the gradient.
+
+```python
+def dir_threshold(gray, sobel_kernel=3, thresh=(0, np.pi/2)):
+    """
+    This is used to generate sobel direction of the warped gray images
+    """
+    # Calculate the x and y gradients
+    sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=sobel_kernel)
+    sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=sobel_kernel)
+    # Take the absolute value of the gradient direction, 
+    # apply a threshold, and create a binary image result
+    absgraddir = np.arctan2(np.absolute(sobely), np.absolute(sobelx))
+    
+    binary_output =  np.ones_like(absgraddir)
+    
+    binary_output[(absgraddir >= thresh[0]) & (absgraddir <= thresh[1])] = 0
+
+    # Return the binary image
+    return binary_output
+```
+And following were a few results afater applying sobel gradient direction filter.
+![](resources/sg-test1.png)
+![](resources/sg-test2.png)
+
+After applying above sobel gradient and sobel absolute filter, we can notice how both filters results are varing for two colors such that yellow and white. Now we can combine both filters and can see how combine filter is working for both yellow and white lane lines. Following function was used to combine filters.
+
+```python
+def combine_thresholds(unwarp_img, gray, mag_kernel, mag_thresh, dir_thresh, dir_kernel ):
+    """
+    This is used to combine sobel magnitude and sobel direction gradients.
+    """
+    gradx = abs_sobel_thresh(gray, orient='x', thresh_min=mag_thresh[0], thresh_max=mag_thresh[1])
+    grady = abs_sobel_thresh(gray, orient='y', thresh_min=mag_thresh[0], thresh_max=mag_thresh[1])
+    
+    mag_binary = mag_threshold(gray, sobel_kernel=mag_kernel, mag_thresh=mag_thresh)
+    
+    dir_binary = dir_threshold(gray, sobel_kernel=dir_kernel, thresh=dir_thresh)
+    
+    combined = np.zeros_like(dir_binary)
+    combined[((gradx == 1) & (grady == 1)) | ((mag_binary == 1) & (dir_binary == 1))] = 1
+    
+    # A combine binary image 
+    return combined
+```
+Following are the few results for combine filter.
+
+![](resources/combine-1.png)
+![](resources/combine-2.png)
