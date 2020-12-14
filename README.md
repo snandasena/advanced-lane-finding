@@ -283,3 +283,47 @@ Following are the few results for combine filter.
 
 ![](resources/combine-1.png)
 ![](resources/combine-2.png)
+
+#### Normalize color channels
+HLS L channel and LAB B was perfomed well to detect yellow and white lane lines, now we can nomalize both color channels to smooth edges. Following functions were used to nomalize color channels.
+
+######  Nomalize HLS L color channel
+
+```python
+def hls_l_nomalize(img, thresh=(220, 255)):
+    """
+    This is used to nomalize HLS L color channel
+    """
+    # 1) Convert to HLS color space
+    _,hls_l,_ = extract_hls_color_spaces(img)
+    hls_l = hls_l*(255/np.max(hls_l))
+    # 2) Apply a threshold to the L channel
+    binary_output = np.zeros_like(hls_l)
+    binary_output[(hls_l > thresh[0]) & (hls_l <= thresh[1])] = 1
+    # 3) Return a binary image of threshold result
+    return binary_output
+
+```
+
+######  Nomalize LAB B color channel
+
+```python
+def lab_b_nomalize(unwarped_img, thresh=(190,255)):
+    """
+    This is used to LAB B color channel
+    """
+    _,_,lab_b = extract_lab_color_spaces(unwarped_img)
+    # don't normalize if there are no yellows in the image
+    if np.max(lab_b) > 175:
+        lab_b = lab_b*(255/np.max(lab_b))
+    # 2) Apply a threshold to the L channel
+    binary_output = np.zeros_like(lab_b)
+    binary_output[((lab_b > thresh[0]) & (lab_b <= thresh[1]))] = 1
+    # 3) Return a binary image of threshold result
+    return binary_output
+```
+
+Following are the results of above filters respectively.
+
+![](resources/thersh-1.png)
+![](resources/thersh-2.png )
