@@ -327,3 +327,32 @@ Following are the results of above filters respectively.
 
 ![](resources/thersh-1.png)
 ![](resources/thersh-2.png )
+
+#### Image pipeline
+```python
+def pipeline(p_img):
+    
+    # Undistort images
+    undistort_img = undistort(p_img)
+    
+    # Persfective transform
+    img_unwarp,M, Minv = unwarp(undistort_img, src, dst)
+    
+    # HLS L-channel Threshold (using default parameters)
+    img_hls_L = hls_l_nomalize(img_unwarp)
+
+    # Lab B-channel Threshold (using default parameters)
+    img_lab_B = lab_b_nomalize(img_unwarp)
+    
+    # Combine HLS and Lab B channel thresholds
+    combined = np.zeros_like(img_lab_B)
+    combined[(img_hls_L == 1) | (img_lab_B == 1)] = 1
+    
+    return combined, Minv
+    
+```
+Following are the a few samples of pipeline output.
+
+![](resources/pipeline-1.png)
+![](resources/pipeline-2.png)
+
