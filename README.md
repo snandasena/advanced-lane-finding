@@ -231,3 +231,10 @@ Following are the some of results after applying above filter.
 
 ![](resources/sobel-abs-test-3.png)
 ![](resources/sobel-abs-test-2.png)
+
+#### Sobel direction of the gradient
+The magnitude, or absolute value, of the gradient is just the square root of the squares of the individual x and y gradients. For a gradient in both the **x** and **y** directions, the magnitude is the square root of the sum of the squares.
+
+abs_sobelx=(sobelx)2 = \sqrt{(sobel_x)^2}=(sobelx​)2
+abs_sobely=(sobely)2 = \sqrt{(sobel_y)^2}=(sobely​)2
+abs_sobelxy=(sobelx)2+(sobely)2 = \sqrt{(sobel_x)^2+(sobel_y)^2}=(sobelx​)2+(sobely​)2
