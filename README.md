@@ -255,3 +255,5 @@ def dir_threshold(gray, sobel_kernel=3, thresh=(0, np.pi/2)):
     return binary_output
 ```
 And following were a few results afater applying sobel gradient direction filter.
+![](resources/sg-test1.png)
+![](resources/sg-test2.png)
