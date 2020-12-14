@@ -127,7 +127,7 @@ Here is the sample result of above function.
 
 Working with colour spaces and channels
 ---
-On road lane line images, we have to detect two major colors such that yellow and white. By seeing bellow color venn diagram we can get some idea about how other colors are making with three major colors. I have tested with four color spaces sush that RGB, HSV, HSL, and LAB. 
+On road lane line images, we have to detect two major colors such that yellow and white. By seeing bellow color venn diagram we can get some idea about how other colors are making with three major colors. I have tested with four color spaces sush that RGB, HSV, HLS, and LAB. 
 
 ![](resources/color-venn-dia.png)
 
@@ -151,13 +151,14 @@ def extract_hsv_color_spaces(uwimg):
     unwarp_V = unwarp_HSV[:, :, 2]
     return unwarp_H,unwarp_S,unwarp_V
 
-# Extract H,S, and L color channels from HSL color space.
-def extract_hsl_color_spaces(uwimg):
-    unwarp_HSL = cv2.cvtColor(uwimg, cv2.COLOR_RGB2HLS)
-    unwarp_HSL_H = unwarp_HSL[:, :, 0]
-    unwarp_HSL_S = unwarp_HSL[:, :, 1]
-    unwarp_HSL_L = unwarp_HSL[:, :, 2]
-    return unwarp_HSL_H,unwarp_HSL_S,unwarp_HSL_L
+# Extract H,S, and L color channels from HLS color space.
+def extract_hls_color_spaces(uwimg):
+    unwarp_HLS = cv2.cvtColor(uwimg, cv2.COLOR_RGB2HLS)
+    unwarp_HLS_H = unwarp_HLS[:, :, 0]
+    unwarp_HLS_L = unwarp_HLS[:, :, 1]
+    unwarp_HLS_S = unwarp_HLS[:, :, 2]
+    
+    return unwarp_HLS_H,unwarp_HLS_L,unwarp_HLS_S
     
 # Extract L,A, and B color channels from LAB color space.
 def extract_lab_color_spaces(uwimg):
@@ -178,7 +179,7 @@ I have applied above functions to detect lane lines edges from road images. Foll
 ![](resources/hsv-test-1.png)
 ![](resources/hsv-test-2.png)
 
-##### HSL color space results
+##### HLS color space results
 ![](resources/hsl-test-1.png)
 ![](resources/hsl-test-2.png)
 
@@ -187,7 +188,7 @@ I have applied above functions to detect lane lines edges from road images. Foll
 ![](resources/lab-test-2.png)
 
 ##### Color spaces conclutions
-**LAB** color space **B** was perfomed well to detect yellow lane lines from the roads images. For white lane lines, we have few options to select color channels. **HSL** **S** was perfomed well to detect white lane lines from road images.
+**LAB** color space **B** was perfomed well to detect yellow lane lines from the roads images. For white lane lines, we have few options to select color channels. **HLS** **L** was perfomed well to detect white lane lines from road images.
 
 With the above conclutions, I select to only two color channels to apply gredient threshold filters. 
 
@@ -282,3 +283,76 @@ Following are the few results for combine filter.
 
 ![](resources/combine-1.png)
 ![](resources/combine-2.png)
+
+#### Normalize color channels
+HLS L channel and LAB B was perfomed well to detect yellow and white lane lines, now we can nomalize both color channels to smooth edges. Following functions were used to nomalize color channels.
+
+######  Nomalize HLS L color channel
+
+```python
+def hls_l_nomalize(img, thresh=(220, 255)):
+    """
+    This is used to nomalize HLS L color channel
+    """
+    # 1) Convert to HLS color space
+    _,hls_l,_ = extract_hls_color_spaces(img)
+    hls_l = hls_l*(255/np.max(hls_l))
+    # 2) Apply a threshold to the L channel
+    binary_output = np.zeros_like(hls_l)
+    binary_output[(hls_l > thresh[0]) & (hls_l <= thresh[1])] = 1
+    # 3) Return a binary image of threshold result
+    return binary_output
+
+```
+
+######  Nomalize LAB B color channel
+
+```python
+def lab_b_nomalize(unwarped_img, thresh=(190,255)):
+    """
+    This is used to LAB B color channel
+    """
+    _,_,lab_b = extract_lab_color_spaces(unwarped_img)
+    # don't normalize if there are no yellows in the image
+    if np.max(lab_b) > 175:
+        lab_b = lab_b*(255/np.max(lab_b))
+    # 2) Apply a threshold to the L channel
+    binary_output = np.zeros_like(lab_b)
+    binary_output[((lab_b > thresh[0]) & (lab_b <= thresh[1]))] = 1
+    # 3) Return a binary image of threshold result
+    return binary_output
+```
+
+Following are the results of above filters respectively.
+
+![](resources/thersh-1.png)
+![](resources/thersh-2.png )
+
+#### Image pipeline
+```python
+def pipeline(p_img):
+    
+    # Undistort images
+    undistort_img = undistort(p_img)
+    
+    # Persfective transform
+    img_unwarp,M, Minv = unwarp(undistort_img, src, dst)
+    
+    # HLS L-channel Threshold (using default parameters)
+    img_hls_L = hls_l_nomalize(img_unwarp)
+
+    # Lab B-channel Threshold (using default parameters)
+    img_lab_B = lab_b_nomalize(img_unwarp)
+    
+    # Combine HLS and Lab B channel thresholds
+    combined = np.zeros_like(img_lab_B)
+    combined[(img_hls_L == 1) | (img_lab_B == 1)] = 1
+    
+    return combined, Minv
+    
+```
+Following are the a few samples of pipeline output.
+
+![](resources/pipeline-1.png)
+![](resources/pipeline-2.png)
+
