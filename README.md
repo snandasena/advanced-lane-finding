@@ -356,3 +356,30 @@ Following are the a few samples of pipeline output.
 ![](resources/pipeline-1.png)
 ![](resources/pipeline-2.png)
 
+Above pipeline can be used to contine next steps image processing.
+
+
+Detect lane boundaries
+---
+To detect lane boundaries we can peaks in a histogram. As we notice around the lane boundaries average white pixel density is higer than comparativelty other regions. Using following function we can generate a histogram data points from a binary image.
+
+```python
+def hist(img):
+    """
+    This is used to extract data points for a histogram
+    """
+    # Grab only the bottom half of the image
+    bottom_half = img[img.shape[0]//2:,:]
+    # Sum across image pixels vertically - make sure to set an `axis`
+    # i.e. the highest areas of vertical lines should be larger values
+    histogram = np.sum(bottom_half, axis=0)
+    
+    return histogram
+```
+Following are the image and it's relevant lane line boundaries histogram  
+
+![](resources/his-img.png) ![](resources/histogram.png)
+
+
+Pipeline's extracted binary image, pixels are either 0 or 1, so the two most prominent peaks in this histogram will be good indicators of the x-position of the base of the lane lines. We can use that as a starting point for where to search for the lines. From that point, we can use a sliding window, placed around the line centers, to find and follow the lines up to the top of the frame.
+
