@@ -227,3 +227,7 @@ def abs_sobel_thresh(gray, orient='x', thresh_min=0, thresh_max=255):
     return binary_sobel
 
 ```
+Following are the some of results after applying above filter.
+
+![](resources/sobel-abs-test-1.png)
+![](resources/sobel-abs-test-2.png)
