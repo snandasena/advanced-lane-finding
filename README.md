@@ -231,3 +231,27 @@ Following are the some of results after applying above filter.
 
 ![](resources/sobel-abs-test-3.png)
 ![](resources/sobel-abs-test-2.png)
+
+#### Sobel direction of the gradient
+The magnitude, or absolute value, of the gradient is just the square root of the squares of the individual x and y gradients. For a gradient in both the **x** and **y** directions, the magnitude is the square root of the sum of the squares. Following function was used to calculate direction of the gradient.
+
+```python
+def dir_threshold(gray, sobel_kernel=3, thresh=(0, np.pi/2)):
+    """
+    This is used to generate sobel direction of the warped gray images
+    """
+    # Calculate the x and y gradients
+    sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=sobel_kernel)
+    sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=sobel_kernel)
+    # Take the absolute value of the gradient direction, 
+    # apply a threshold, and create a binary image result
+    absgraddir = np.arctan2(np.absolute(sobely), np.absolute(sobelx))
+    
+    binary_output =  np.ones_like(absgraddir)
+    
+    binary_output[(absgraddir >= thresh[0]) & (absgraddir <= thresh[1])] = 0
+
+    # Return the binary image
+    return binary_output
+```
+And following were a few results afater applying sobel gradient direction filter.
