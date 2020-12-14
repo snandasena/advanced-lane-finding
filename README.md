@@ -189,3 +189,41 @@ I have applied above functions to detect lane lines edges from road images. Foll
 ##### Color spaces conclutions
 **LAB** color space **B** was perfomed well to detect yellow lane lines from the roads images. For white lane lines, we have few options to select color channels. **HSL** **S** was perfomed well to detect white lane lines from road images.
 
+With the above conclutions, I select to only two color channels to apply gredient threshold filters. 
+
+### Gradient threshold
+When we are detecting edges from road images, there are ohter edges will be detected with Canny edge detection. We have to minimize those unnecessary edge detections. One of the improved version of Canny edge detection is **Sobel operator**[[Wikipedia](https://en.wikipedia.org/wiki/Sobel_operator)].  Applying the Sobel operator to an image is a way of taking the derivative of the image in the x or y direction.
+
+#### Sobel absolute threshold
+Following function was used to apply sobel absolute filter
+
+```python
+def abs_sobel_thresh(gray, orient='x', thresh_min=0, thresh_max=255):
+    """
+    This is used to create abinary image using a grayscaled image. 
+    
+    :param gray - Grayscaled or binary image
+    :param orient - x or y derections of the image
+    :param thresh_min - minimum value for binary threshold
+    :param thresh_max - maximum value for binary threshold
+    :return - A binary image after appying Sobel absolute threshold
+    """
+    # Apply the following steps to img
+    # 1) Take the derivative in x or y given orient = 'x' or 'y'
+    dx = 1 if orient=='x'  else  0
+    dy = 1 if orient=='y'  else  0
+
+    sobel = cv2.Sobel(gray, cv2.CV_64F,dx ,dy)
+    # 2) Take the absolute value of the derivative or gradient
+    abs_sobel = np.absolute(sobel)
+    # 3) Scale to 8-bit (0 - 255) then convert to type = np.uint8
+    scaled_sobel = np.uint8(255*abs_sobel/np.max(abs_sobel))
+    # 4) Create a mask of 1's where the scaled gradient magnitude
+            # is > thresh_min and < thresh_max
+        
+    binary_sobel = np.zeros_like(scaled_sobel)
+    binary_sobel[(scaled_sobel >= thresh_min) & (scaled_sobel <= thresh_max)] = 1
+    
+    return binary_sobel
+
+```
