@@ -479,3 +479,4 @@ if len(rightx) != 0:
 Note: Complete function can found `Advanced_Lane_Finding.ipynb` file.  
 Following are showing original image and expected output after applying above functions.
 
+![](resources/sliding-wind-original.png) ![](resources/sliding-windows.png)
