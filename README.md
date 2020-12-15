@@ -383,3 +383,22 @@ Following are the image and it's relevant lane line boundaries histogram
 
 Pipeline's extracted binary image, pixels are either 0 or 1, so the two most prominent peaks in this histogram will be good indicators of the x-position of the base of the lane lines. We can use that as a starting point for where to search for the lines. From that point, we can use a sliding window, placed around the line centers, to find and follow the lines up to the top of the frame.
 
+#### Implement sliding windows and fit a polynomial
+We can use the two highest peaks from our histogram as a starting point for determining where the lane lines are, and then use sliding windows moving upward in the image (further along the road) to determine where the lane lines go.
+
+###### Split the histogram for the two lines
+The first step we'll take is to split the histogram into two sides, one for each lane line. Following are the used functions' utilities to split histogram for the two lane lines.
+
+```python
+# Take a histogram of the bottom half of the image
+histogram = np.sum(img[img.shape[0]//2:,:], axis=0)
+# Find the peak of the left and right halves of the histogram
+# These will be the starting point for the left and right lines
+midpoint = np.int(histogram.shape[0]//2)
+quarter_point = np.int(midpoint//2)
+# Previously the left/right base was the max of the left/right half of the histogram
+# this changes it so that only a quarter of the histogram (directly to the left/right) is considered
+leftx_base = np.argmax(histogram[quarter_point:midpoint]) + quarter_point
+rightx_base = np.argmax(histogram[midpoint:(midpoint+quarter_point)]) + midpoint
+```
+ 
