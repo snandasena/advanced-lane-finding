@@ -454,3 +454,24 @@ for window in range(nwindows):
     if len(good_right_inds) > minpix:        
         rightx_current = np.int(np.mean(nonzerox[good_right_inds]))
 ```
+
+###### Fit a polynomial
+
+```python
+# Concatenate the arrays of indices
+left_lane_inds = np.concatenate(left_lane_inds)
+right_lane_inds = np.concatenate(right_lane_inds)
+
+# Extract left and right line pixel positions
+leftx = nonzerox[left_lane_inds]
+lefty = nonzeroy[left_lane_inds] 
+rightx = nonzerox[right_lane_inds]
+righty = nonzeroy[right_lane_inds] 
+
+left_fit, right_fit = (None, None)
+# Fit a second order polynomial to each
+if len(leftx) != 0:
+    left_fit = np.polyfit(lefty, leftx, 2)
+if len(rightx) != 0:
+    right_fit = np.polyfit(righty, rightx, 2)
+```
