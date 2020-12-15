@@ -401,4 +401,30 @@ quarter_point = np.int(midpoint//2)
 leftx_base = np.argmax(histogram[quarter_point:midpoint]) + quarter_point
 rightx_base = np.argmax(histogram[midpoint:(midpoint+quarter_point)]) + midpoint
 ```
- 
+
+###### Set up windows and window hyperparameters
+The next step is to set a few hyperparameters related to our sliding windows, and set them up to iterate across the binary activations in the image.
+
+```python
+# Choose the number of sliding windows
+nwindows = 10
+# Set height of windows
+window_height = np.int(img.shape[0]/nwindows)
+# Identify the x and y positions of all nonzero pixels in the image
+nonzero = img.nonzero()
+nonzeroy = np.array(nonzero[0])
+nonzerox = np.array(nonzero[1])
+# Current positions to be updated for each window
+leftx_current = leftx_base
+rightx_current = rightx_base
+# Set the width of the windows +/- margin
+margin = 80
+# Set minimum number of pixels found to recenter window
+minpix = 40
+# Create empty lists to receive left and right lane pixel indices
+left_lane_inds = []
+right_lane_inds = []
+# Rectangle data for visualization
+rectangle_data = []
+
+```
