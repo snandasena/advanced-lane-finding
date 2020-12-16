@@ -518,7 +518,7 @@ Determine curvature of the lane line
 ---
 In this step we'll find curvature of left and right lanes. By using `polyfit_using_prev_fit` function we can locate lane line pixels, used their **x** and **y** pixel position to fit a secondorder polynomial curve.
 
-`f(y) = Ay^2 + By +C`
+![](resources/second-order-polynomial.png)
 
 We are fitting for `f(y)` rather than `f(x)`, because the lane lines in the warped image(bird-eye view) are near vertical and may have the same x value for more than one y value.
 
