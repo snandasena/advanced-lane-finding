@@ -524,3 +524,9 @@ We are fitting for `f(y)` rather than `f(x)`, because the lane lines in the warp
 
 ![](resources/color-fit-lines.jpg)
 Source: https://video.udacity-data.com/topher/2016/December/58449a23_color-fit-lines/color-fit-lines.jpg
+
+
+#### Radius of curvature
+The radius of curvature at any point x of the function x=f(y) is given as follows: 
+
+![](resources/radius-of-curvature.png)
