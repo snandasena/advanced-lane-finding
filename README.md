@@ -610,7 +610,7 @@ def draw_data(original_img, curv_rad, center_dist):
 
 ![](resources/final-img.png)
 
-## Video pipeline
+#### Video pipeline
 After drawing lane lines, the final pipeline was build with following functions and the class. The outputs were stored at `[output_videos](/output_videos)` directory and I provided those external uploaded links under *Results* section.
 
 ```python
