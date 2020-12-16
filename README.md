@@ -547,3 +547,7 @@ r_fit_x_int = r_fit[0]*h**2 + r_fit[1]*h + r_fit[2]
 lane_center_position = (r_fit_x_int + l_fit_x_int) /2
 center_dist = (car_position - lane_center_position) * xm_per_pix
 ```
+
+Note: The complete function can be found from [`Advanced_Lane_Finding.ipynb`](Advanced_Lane_Finding.ipynb) file and the function will be `calc_curv_rad_and_center_dist`. 
+
+
