@@ -610,11 +610,113 @@ def draw_data(original_img, curv_rad, center_dist):
 
 ![](resources/final-img.png)
 
+## Video pipeline
+After drawing lane lines, the final pipeline was build with following functions and the class. The outputs were stored at `[output_videos](/output_videos)` directory and I provided those external uploaded links under *Results* section.
+
+```python
+# Define a class to receive the characteristics of each line detection
+class Line():
+    def __init__(self):
+        # was the line detected in the last iteration?
+        self.detected = False  
+        # x values of the last n fits of the line
+        self.recent_xfitted = [] 
+        #average x values of the fitted line over the last n iterations
+        self.bestx = None     
+        #polynomial coefficients averaged over the last n iterations
+        self.best_fit = None  
+        #polynomial coefficients for the most recent fit
+        self.current_fit = []  
+        #radius of curvature of the line in some units
+        self.radius_of_curvature = None 
+        #distance in meters of vehicle center from the line
+        self.line_base_pos = None 
+        #difference in fit coefficients between last and new fits
+        self.diffs = np.array([0,0,0], dtype='float') 
+        #number of detected pixels
+        self.px_count = None
+        
+    def add_fit(self, fit, inds):
+        # add a found fit to the line, up to n
+        if fit is not None:
+            if self.best_fit is not None:
+                # if we have a best fit, see how this new fit compares
+                self.diffs = abs(fit-self.best_fit)
+            if (self.diffs[0] > 0.001 or \
+               self.diffs[1] > 1.0 or \
+               self.diffs[2] > 100.) and \
+               len(self.current_fit) > 0:
+                # bad fit! abort! abort! ... well, unless there are no fits in the current_fit queue, then we'll take it
+                self.detected = False
+            else:
+                self.detected = True
+                self.px_count = np.count_nonzero(inds)
+                self.current_fit.append(fit)
+                if len(self.current_fit) > 5:
+                    # throw out old fits, keep newest n
+                    self.current_fit = self.current_fit[len(self.current_fit)-5:]
+                self.best_fit = np.average(self.current_fit, axis=0)
+        # or remove one from the history, if not found
+        else:
+            self.detected = False
+            if len(self.current_fit) > 0:
+                # throw out oldest fit
+                self.current_fit = self.current_fit[:len(self.current_fit)-1]
+            if len(self.current_fit) > 0:
+                # if there are still any fits in the queue, best_fit is their average
+                self.best_fit = np.average(self.current_fit, axis=0)
+```
+```python
+def process_image(img):
+    new_img = np.copy(img)
+    img_bin, Minv = pipeline(new_img)
+    
+    # if both left and right lines were detected last frame, use polyfit_using_prev_fit, otherwise use sliding window
+    if not l_line.detected or not r_line.detected:
+        l_fit, r_fit, l_lane_inds, r_lane_inds, _ = sliding_window_polyfit(img_bin)
+    else:
+        l_fit, r_fit, l_lane_inds, r_lane_inds = polyfit_using_prev_fit(img_bin, l_line.best_fit, r_line.best_fit)
+        
+    # invalidate both fits if the difference in their x-intercepts isn't around 350 px (+/- 100 px)
+    if l_fit is not None and r_fit is not None:
+        # calculate x-intercept (bottom of image, x=image_height) for fits
+        h = img.shape[0]
+        l_fit_x_int = l_fit[0]*h**2 + l_fit[1]*h + l_fit[2]
+        r_fit_x_int = r_fit[0]*h**2 + r_fit[1]*h + r_fit[2]
+        x_int_diff = abs(r_fit_x_int-l_fit_x_int)
+        if abs(350 - x_int_diff) > 100:
+            l_fit = None
+            r_fit = None
+            
+    l_line.add_fit(l_fit, l_lane_inds)
+    r_line.add_fit(r_fit, r_lane_inds)
+    
+    # draw the current best fit if it exists
+    if l_line.best_fit is not None and r_line.best_fit is not None:
+        img_out1 = draw_lane(new_img)
+        rad_l, rad_r, d_center = calc_curv_rad_and_center_dist(img_bin, l_line.best_fit, r_line.best_fit, 
+                                                               l_lane_inds, r_lane_inds)
+        img_out = draw_data(img_out1, (rad_l+rad_r)/2, d_center)
+    else:
+        img_out = new_img
+    
+    return img_out
+```
+```
+def plot_fit_onto_img(img, fit, plot_color):
+    if fit is None:
+        return img
+    new_img = np.copy(img)
+    h = new_img.shape[0]
+    ploty = np.linspace(0, h-1, h)
+    plotx = fit[0]*ploty**2 + fit[1]*ploty + fit[2]
+    pts = np.array([np.transpose(np.vstack([plotx, ploty]))])
+    cv2.polylines(new_img, np.int32([pts]), isClosed=False, color=plot_color, thickness=8)
+    return new_img 
+```    
 Results
 ---
 After applying above individual functions, we can create image processing pipeline and then it can be applied to process video inputs. There utility functions to finalize project challenge video. Using following link final project challenge and other challenges output can be found.
-
-
 
 |[Project Video](https://youtu.be/sY47Zs5aN0c)|[Challenge Video](https://youtu.be/KhoOvG-FdAU)|[Hard Challenge Video](https://youtu.be/J_VD-1X547o)|
 |---------------------------------------------|-----------------------------------------------|----------------------------------------------------|
