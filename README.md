@@ -617,4 +617,27 @@ After applying above individual functions, we can create image processing pipeli
 
 
 |[Project Video](https://youtu.be/sY47Zs5aN0c)|[Challenge Video](https://youtu.be/KhoOvG-FdAU)|[Hard Challenge Video](https://youtu.be/J_VD-1X547o)|
-|---------------------------------------------|-----------------------------------------------|---------------------------------------------------|
+|---------------------------------------------|-----------------------------------------------|----------------------------------------------------|
+
+Discussions
+---
+
+
+References
+---
+* [Self-Driving Car Project Q&A | Advanced Lane Finding](https://www.youtube.com/watch?v=vWY8YUayf9Q)
+* [Introduction to Computer Vision - Udacity](https://www.udacity.com/course/introduction-to-computer-vision--ud810)
+* [Self driving can engineer - Udacity](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013)
+* [OpenCV official documents](https://docs.opencv.org/4.4.0/index.html)
+* [OpenCV my git repo C++ samples](https://github.com/snandasena/opencv-cpp-examples)
+* [CS231n: Convolutional Neural Networks for Visual Recognition](http://cs231n.stanford.edu/)
+* [What Is Camera Calibration?](https://www.mathworks.com/help/vision/ug/camera-calibration.html)
+* [Ross Kippenbrock - Finding Lane Lines for Self Driving Cars](https://www.youtube.com/watch?v=VyLihutdsPk)
+* [Radius of Curvature](https://www.intmath.com/applications-differentiation/8-radius-curvature.php)
+* [Multivariable calculus - Khan Acedemy](https://www.khanacademy.org/math/multivariable-calculus)
+* [MIT Deep Learning and Artificial Intelligence Lectures](https://deeplearning.mit.edu/)
+
+
+Acknowledgments
+---
+Big thank you to [Udacity](https://www.udacity.com) for providing the template code for this project.
