@@ -606,5 +606,6 @@ def draw_data(original_img, curv_rad, center_dist):
     text = '{:04.3f}'.format(abs_center_dist) + 'm ' + direction + ' of center'
     cv2.putText(new_img, text, (40,120), font, 1.5, (200,255,155), 2, cv2.LINE_AA)
     return new_img
-    
-    ```
+```   
+
+![](resources/final-img.png)
