@@ -476,7 +476,7 @@ if len(rightx) != 0:
     right_fit = np.polyfit(righty, rightx, 2)
 ```
 
-Note: Complete function can found `Advanced_Lane_Finding.ipynb` file.  
+Note: Complete function can be found [`Advanced_Lane_Finding.ipynb`](Advanced_Lane_Finding.ipynb)file.  
 Following are showing original image and expected output after applying above functions.
 
 ![](resources/sliding-wind-original.png) ![](resources/sliding-windows.png)
