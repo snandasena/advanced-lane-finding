@@ -550,4 +550,196 @@ center_dist = (car_position - lane_center_position) * xm_per_pix
 
 Note: The complete function can be found from [`Advanced_Lane_Finding.ipynb`](Advanced_Lane_Finding.ipynb) file and the function will be `calc_curv_rad_and_center_dist`. 
 
+#### Draw lane and text data onto road images
+Following functions were used to finalize road lane polygon drawging and result were attached after the code snipets. 
 
+###### Draw lane lines
+```python
+def draw_lane(original_img):
+    original_img_bin, Minv = pipeline(original_img) 
+    l_fit,r_fit,_,_,_ = sliding_window_polyfit(original_img_bin)
+    
+    new_img = np.copy(original_img)
+    if l_fit is None or r_fit is None:
+        return original_img
+    # Create an image to draw the lines on
+    warp_zero = np.zeros_like(original_img_bin).astype(np.uint8)
+    color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
+    
+    h,w = original_img_bin.shape
+    ploty = np.linspace(0, h-1, num=h)# to cover same y-range as image
+    left_fitx = l_fit[0]*ploty**2 + l_fit[1]*ploty + l_fit[2]
+    right_fitx = r_fit[0]*ploty**2 + r_fit[1]*ploty + r_fit[2]
+
+    # Recast the x and y points into usable format for cv2.fillPoly()
+    pts_left = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
+    pts_right = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
+    pts = np.hstack((pts_left, pts_right))
+
+    # Draw the lane onto the warped blank image
+    cv2.fillPoly(color_warp, np.int_([pts]), (0,255, 0))
+    cv2.polylines(color_warp, np.int32([pts_left]), isClosed=False, color=(255,0,255), thickness=15)
+    cv2.polylines(color_warp, np.int32([pts_right]), isClosed=False, color=(0,255,255), thickness=15)
+
+    # Warp the blank back to original image space using inverse perspective matrix (Minv)
+    newwarp = cv2.warpPerspective(color_warp, Minv, (w, h)) 
+    # Combine the result with the original image
+    result = cv2.addWeighted(new_img, 1, newwarp, 0.5, 0)
+    return result
+```    
+
+Following function was used to show radius curvature and distance from center values.
+
+```python
+def draw_data(original_img, curv_rad, center_dist):
+    new_img = np.copy(original_img)
+    h = new_img.shape[0]
+    font = cv2.FONT_HERSHEY_DUPLEX
+    text = 'Curve radius: ' + '{:04.2f}'.format(curv_rad) + 'm'
+    cv2.putText(new_img, text, (40,70), font, 1.5, (200,255,155), 2, cv2.LINE_AA)
+    direction = ''
+    if center_dist > 0:
+        direction = 'right'
+    elif center_dist < 0:
+        direction = 'left'
+    abs_center_dist = abs(center_dist)
+    text = '{:04.3f}'.format(abs_center_dist) + 'm ' + direction + ' of center'
+    cv2.putText(new_img, text, (40,120), font, 1.5, (200,255,155), 2, cv2.LINE_AA)
+    return new_img
+```   
+
+![](resources/final-img.png)
+
+#### Video pipeline
+After drawing lane lines, the final pipeline was build with following functions and the class. The outputs were stored at `[output_videos](/output_videos)` directory and I provided those external uploaded links under *Results* section.
+
+```python
+# Define a class to receive the characteristics of each line detection
+class Line():
+    def __init__(self):
+        # was the line detected in the last iteration?
+        self.detected = False  
+        # x values of the last n fits of the line
+        self.recent_xfitted = [] 
+        #average x values of the fitted line over the last n iterations
+        self.bestx = None     
+        #polynomial coefficients averaged over the last n iterations
+        self.best_fit = None  
+        #polynomial coefficients for the most recent fit
+        self.current_fit = []  
+        #radius of curvature of the line in some units
+        self.radius_of_curvature = None 
+        #distance in meters of vehicle center from the line
+        self.line_base_pos = None 
+        #difference in fit coefficients between last and new fits
+        self.diffs = np.array([0,0,0], dtype='float') 
+        #number of detected pixels
+        self.px_count = None
+        
+    def add_fit(self, fit, inds):
+        # add a found fit to the line, up to n
+        if fit is not None:
+            if self.best_fit is not None:
+                # if we have a best fit, see how this new fit compares
+                self.diffs = abs(fit-self.best_fit)
+            if (self.diffs[0] > 0.001 or \
+               self.diffs[1] > 1.0 or \
+               self.diffs[2] > 100.) and \
+               len(self.current_fit) > 0:
+                # bad fit! abort! abort! ... well, unless there are no fits in the current_fit queue, then we'll take it
+                self.detected = False
+            else:
+                self.detected = True
+                self.px_count = np.count_nonzero(inds)
+                self.current_fit.append(fit)
+                if len(self.current_fit) > 5:
+                    # throw out old fits, keep newest n
+                    self.current_fit = self.current_fit[len(self.current_fit)-5:]
+                self.best_fit = np.average(self.current_fit, axis=0)
+        # or remove one from the history, if not found
+        else:
+            self.detected = False
+            if len(self.current_fit) > 0:
+                # throw out oldest fit
+                self.current_fit = self.current_fit[:len(self.current_fit)-1]
+            if len(self.current_fit) > 0:
+                # if there are still any fits in the queue, best_fit is their average
+                self.best_fit = np.average(self.current_fit, axis=0)
+```
+```python
+def process_image(img):
+    new_img = np.copy(img)
+    img_bin, Minv = pipeline(new_img)
+    
+    # if both left and right lines were detected last frame, use polyfit_using_prev_fit, otherwise use sliding window
+    if not l_line.detected or not r_line.detected:
+        l_fit, r_fit, l_lane_inds, r_lane_inds, _ = sliding_window_polyfit(img_bin)
+    else:
+        l_fit, r_fit, l_lane_inds, r_lane_inds = polyfit_using_prev_fit(img_bin, l_line.best_fit, r_line.best_fit)
+        
+    # invalidate both fits if the difference in their x-intercepts isn't around 350 px (+/- 100 px)
+    if l_fit is not None and r_fit is not None:
+        # calculate x-intercept (bottom of image, x=image_height) for fits
+        h = img.shape[0]
+        l_fit_x_int = l_fit[0]*h**2 + l_fit[1]*h + l_fit[2]
+        r_fit_x_int = r_fit[0]*h**2 + r_fit[1]*h + r_fit[2]
+        x_int_diff = abs(r_fit_x_int-l_fit_x_int)
+        if abs(350 - x_int_diff) > 100:
+            l_fit = None
+            r_fit = None
+            
+    l_line.add_fit(l_fit, l_lane_inds)
+    r_line.add_fit(r_fit, r_lane_inds)
+    
+    # draw the current best fit if it exists
+    if l_line.best_fit is not None and r_line.best_fit is not None:
+        img_out1 = draw_lane(new_img)
+        rad_l, rad_r, d_center = calc_curv_rad_and_center_dist(img_bin, l_line.best_fit, r_line.best_fit, 
+                                                               l_lane_inds, r_lane_inds)
+        img_out = draw_data(img_out1, (rad_l+rad_r)/2, d_center)
+    else:
+        img_out = new_img
+    
+    return img_out
+```
+```
+def plot_fit_onto_img(img, fit, plot_color):
+    if fit is None:
+        return img
+    new_img = np.copy(img)
+    h = new_img.shape[0]
+    ploty = np.linspace(0, h-1, h)
+    plotx = fit[0]*ploty**2 + fit[1]*ploty + fit[2]
+    pts = np.array([np.transpose(np.vstack([plotx, ploty]))])
+    cv2.polylines(new_img, np.int32([pts]), isClosed=False, color=plot_color, thickness=8)
+    return new_img 
+```    
+Results
+---
+After applying above individual functions, we can create image processing pipeline and then it can be applied to process video inputs. There utility functions to finalize project challenge video. Using following link final project challenge and other challenges output can be found.
+
+|[Project Video](https://youtu.be/sY47Zs5aN0c)|[Challenge Video](https://youtu.be/KhoOvG-FdAU)|[Hard Challenge Video](https://youtu.be/J_VD-1X547o)|
+|---------------------------------------------|-----------------------------------------------|----------------------------------------------------|
+
+Discussions
+---
+
+
+References
+---
+* [Self-Driving Car Project Q&A | Advanced Lane Finding](https://www.youtube.com/watch?v=vWY8YUayf9Q)
+* [Introduction to Computer Vision - Udacity](https://www.udacity.com/course/introduction-to-computer-vision--ud810)
+* [Self driving can engineer - Udacity](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013)
+* [OpenCV official documents](https://docs.opencv.org/4.4.0/index.html)
+* [OpenCV my git repo C++ samples](https://github.com/snandasena/opencv-cpp-examples)
+* [CS231n: Convolutional Neural Networks for Visual Recognition](http://cs231n.stanford.edu/)
+* [What Is Camera Calibration?](https://www.mathworks.com/help/vision/ug/camera-calibration.html)
+* [Ross Kippenbrock - Finding Lane Lines for Self Driving Cars](https://www.youtube.com/watch?v=VyLihutdsPk)
+* [Radius of Curvature](https://www.intmath.com/applications-differentiation/8-radius-curvature.php)
+* [Multivariable calculus - Khan Acedemy](https://www.khanacademy.org/math/multivariable-calculus)
+* [MIT Deep Learning and Artificial Intelligence Lectures](https://deeplearning.mit.edu/)
+
+
+Acknowledgments
+---
+Big thank you to [Udacity](https://www.udacity.com) for providing the template code for this project.
