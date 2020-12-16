@@ -550,4 +550,61 @@ center_dist = (car_position - lane_center_position) * xm_per_pix
 
 Note: The complete function can be found from [`Advanced_Lane_Finding.ipynb`](Advanced_Lane_Finding.ipynb) file and the function will be `calc_curv_rad_and_center_dist`. 
 
+#### Draw lane and text data onto road images
+Following functions were used to finalize road lane polygon drawging and result were attached after the code snipets. 
 
+###### Draw lane lines
+```python
+def draw_lane(original_img):
+    original_img_bin, Minv = pipeline(original_img) 
+    l_fit,r_fit,_,_,_ = sliding_window_polyfit(original_img_bin)
+    
+    new_img = np.copy(original_img)
+    if l_fit is None or r_fit is None:
+        return original_img
+    # Create an image to draw the lines on
+    warp_zero = np.zeros_like(original_img_bin).astype(np.uint8)
+    color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
+    
+    h,w = original_img_bin.shape
+    ploty = np.linspace(0, h-1, num=h)# to cover same y-range as image
+    left_fitx = l_fit[0]*ploty**2 + l_fit[1]*ploty + l_fit[2]
+    right_fitx = r_fit[0]*ploty**2 + r_fit[1]*ploty + r_fit[2]
+
+    # Recast the x and y points into usable format for cv2.fillPoly()
+    pts_left = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
+    pts_right = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
+    pts = np.hstack((pts_left, pts_right))
+
+    # Draw the lane onto the warped blank image
+    cv2.fillPoly(color_warp, np.int_([pts]), (0,255, 0))
+    cv2.polylines(color_warp, np.int32([pts_left]), isClosed=False, color=(255,0,255), thickness=15)
+    cv2.polylines(color_warp, np.int32([pts_right]), isClosed=False, color=(0,255,255), thickness=15)
+
+    # Warp the blank back to original image space using inverse perspective matrix (Minv)
+    newwarp = cv2.warpPerspective(color_warp, Minv, (w, h)) 
+    # Combine the result with the original image
+    result = cv2.addWeighted(new_img, 1, newwarp, 0.5, 0)
+    return result
+```    
+
+Following function was used to show radius curvature and distance from center values.
+
+```python
+def draw_data(original_img, curv_rad, center_dist):
+    new_img = np.copy(original_img)
+    h = new_img.shape[0]
+    font = cv2.FONT_HERSHEY_DUPLEX
+    text = 'Curve radius: ' + '{:04.2f}'.format(curv_rad) + 'm'
+    cv2.putText(new_img, text, (40,70), font, 1.5, (200,255,155), 2, cv2.LINE_AA)
+    direction = ''
+    if center_dist > 0:
+        direction = 'right'
+    elif center_dist < 0:
+        direction = 'left'
+    abs_center_dist = abs(center_dist)
+    text = '{:04.3f}'.format(abs_center_dist) + 'm ' + direction + ' of center'
+    cv2.putText(new_img, text, (40,120), font, 1.5, (200,255,155), 2, cv2.LINE_AA)
+    return new_img
+    
+    ```
