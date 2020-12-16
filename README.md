@@ -510,6 +510,6 @@ def polyfit_using_prev_fit(binary_warped, left_fit_prev, right_fit_prev):
     return left_fit_new, right_fit_new, left_lane_inds, right_lane_inds
 ```
 
-And following are above function resuls.
+The `polyfit_using_prev_fit` function performs basically the same task, but alleviates much difficulty of the search process by leveraging a previous fit and only searching for lane pixels within a certain range of that fit. And following are above function resuls.
 
 ![](resources/sliding-wind-original.png) ![](resources/polynomial.png)
