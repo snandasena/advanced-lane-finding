@@ -4,6 +4,8 @@ The Project
 ---
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
+[![](resources/ezgif.com-optimize.gif)](https://www.youtube.com/watch?v=sY47Zs5aN0c)
+
 The goals / steps of this project are the following:
 
 * Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
