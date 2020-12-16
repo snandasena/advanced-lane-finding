@@ -1,6 +1,4 @@
-## Advanced Lane Finding
-
-The Project
+Advanced Lane Finding
 ---
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
@@ -478,7 +476,7 @@ if len(rightx) != 0:
     right_fit = np.polyfit(righty, rightx, 2)
 ```
 
-Note: Complete function can found `Advanced_Lane_Finding.ipynb` file.  
+Note: Complete function can be found [`Advanced_Lane_Finding.ipynb`](Advanced_Lane_Finding.ipynb)file.  
 Following are showing original image and expected output after applying above functions.
 
 ![](resources/sliding-wind-original.png) ![](resources/sliding-windows.png)
@@ -512,6 +510,44 @@ def polyfit_using_prev_fit(binary_warped, left_fit_prev, right_fit_prev):
     return left_fit_new, right_fit_new, left_lane_inds, right_lane_inds
 ```
 
-And following are above function resuls.
+The `polyfit_using_prev_fit` function performs basically the same task, but alleviates much difficulty of the search process by leveraging a previous fit and only searching for lane pixels within a certain range of that fit. And following are above function resuls.
 
 ![](resources/sliding-wind-original.png) ![](resources/polynomial.png)
+
+Determine curvature of the lane line
+---
+In this step we'll find curvature of left and right lanes. By using `polyfit_using_prev_fit` function we can locate lane line pixels, used their **x** and **y** pixel position to fit a secondorder polynomial curve.
+
+![](resources/second-order-polynomial.png)
+
+We are fitting for `f(y)` rather than `f(x)`, because the lane lines in the warped image(bird-eye view) are near vertical and may have the same x value for more than one y value.
+
+![](resources/color-fit-lines.jpg)
+Source: https://video.udacity-data.com/topher/2016/December/58449a23_color-fit-lines/color-fit-lines.jpg
+
+
+#### Radius of curvature
+The radius of curvature at any point x of the function x=f(y) is given as follows: 
+
+![](resources/radius-of-curvature.png)
+
+The following Python snipet was used to calculate left and right lane lines' radius of curvatures. 
+
+```python
+left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
+right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
+```
+
+And following snipet was used to calculate distance from center.
+
+```python
+car_position = bin_img.shape[1]/2
+l_fit_x_int = l_fit[0]*h**2 + l_fit[1]*h + l_fit[2]
+r_fit_x_int = r_fit[0]*h**2 + r_fit[1]*h + r_fit[2]
+lane_center_position = (r_fit_x_int + l_fit_x_int) /2
+center_dist = (car_position - lane_center_position) * xm_per_pix
+```
+
+Note: The complete function can be found from [`Advanced_Lane_Finding.ipynb`](Advanced_Lane_Finding.ipynb) file and the function will be `calc_curv_rad_and_center_dist`. 
+
+
