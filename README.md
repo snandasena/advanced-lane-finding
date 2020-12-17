@@ -4,6 +4,9 @@ Advanced Lane Finding
 
 [![](resources/ezgif.com-optimize.gif)](https://www.youtube.com/watch?v=sY47Zs5aN0c)
 
+Introduction
+---
+
 The goals / steps of this project are the following:
 
 * Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
@@ -14,6 +17,20 @@ The goals / steps of this project are the following:
 * Determine the curvature of the lane and vehicle position with respect to center.
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+
+This project consists of the following major files and folders.
+
+* Advanced_Lane_Finding.ipynb - Main source file
+* Advanced_Lane_Finding.html - HTML extractor for main source file output. This can be used to see outputs without running Jupyter notebook
+* camera_cal - Camera calibration images 
+* input_videos - Input videos
+* resources - Saved inputs  and outputs for writeup
+* test_images -  Test road images
+* utils - Test and R&D scripts 
+* README.md - **Writeup for this project**
+* advanced_lane_finding.py - Main pipeline debuger file[incomplete]
+
+[Project running instructions](HOW_TO_RUN.md)
 
 Image processing pipeline
 ---
