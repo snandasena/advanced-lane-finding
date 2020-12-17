@@ -727,7 +727,7 @@ Discussions
 ---
 This is was a great experience to play with the polynomial approach to detect lane lines. But lighting is the worst case for edge detections. Even there were test images without any kind of road lane lines, edges were detected due to shadow boundaries. 
 
-Color thresholding was helped to detect yellow lane lines, LAB B color channel was helped to detect yellow lane lines. For white lane lines, there were multiple color channels supported with clear edges, due to lightning issues HSL S was selected to combine white and yellow lanes.  
+Color thresholding was used to detect lane lines, LAB B color channel was helped to detect yellow lane lines. For white lane lines, there were multiple color channels supported with clear edges, due to lightning issues HSL S was selected to combine white and yellow lanes.  
 
 Histogram based search algorithm was supported to find curve radius if we can try to annotate images using neural network approaches that prebuild model can be used to speed up our algorithm. Especially to process a small video clip will take some considerable time, but in a real-world case, the vehicle speed will be slow down very badly to take time to do the image processing pipeline and decision-making time will be increased due to image processing time.  
 
