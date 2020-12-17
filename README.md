@@ -606,6 +606,7 @@ def draw_data(original_img, curv_rad, center_dist):
     abs_center_dist = abs(center_dist)
     text = '{:04.3f}'.format(abs_center_dist) + 'm ' + direction + ' of center'
     cv2.putText(new_img, text, (40,120), font, 1.5, (200,255,155), 2, cv2.LINE_AA)
+    
     return new_img
 ```   
 
@@ -724,7 +725,7 @@ After applying the above individual functions, we can create an image processing
 
 Discussions
 ---
-This is was a great experience to play with the polynomial approach to detect lane lines. But lighting is the worst case for edge detections. Even there were test images without any kind of road lane lines, edges were detected due to light and dark color planes intersect. 
+This is was a great experience to play with the polynomial approach to detect lane lines. But lighting is the worst case for edge detections. Even there were test images without any kind of road lane lines, edges were detected due to shadow boundaries. 
 
 Color thresholding was helped to detect yellow lane lines, LAB B color channel was helped to detect yellow lane lines. For white lane lines, there were multiple color channels supported with clear edges, due to lightning issues HSL S was selected to combine white and yellow lanes.  
 
