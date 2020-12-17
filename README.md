@@ -723,7 +723,7 @@ After applying above individual functions, we can create image processing pipeli
 
 Discussions
 ---
-This is was a great experince to play with polynomial approch to detect lane lines. But lightling is the worst case for edge detections. Even there were test images without any kind road lane lines edges were detected due light and dark color planes.
+This is was a great experince to play with polynomial approch to detect lane lines. But lightling is the worst case for edge detections. Even there were test images without any kind road lane lines, edges were detected due light and dark color planes intersect.
 
 Color thresholding was helped to detect yellow lane lines, LAB B color channel was helped to detect yellow lane lines. For white lane lines,there were multiple color channels supported with clear edges, due to lightning issues HSL S was selected to combine white and yellow lanes.  
 
