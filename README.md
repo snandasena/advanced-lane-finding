@@ -28,7 +28,7 @@ Camera resectioning determines which incoming light is associated with each pixe
 
 ##### Find and draw chessboard
 
-Before calibration images, chessboard was detected from provided chessboard iamges by using OpenCV `cv2.findChessboardCorners` function. Following are the detected chessboard results. Red reactangle highlighted were not detected as chessbords. 
+Before calibration images, chessboard was detected from provided chessboard images by using OpenCV `cv2.findChessboardCorners` function. Following are the detected chessboard results. Red rectangle highlighted were not detected as chessboards. 
 
 ![](resources/calibrated-imgs.png)
 
@@ -73,25 +73,25 @@ ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints,img_size
 Above `mtx` and `dist` will be used to undistort images in the pipeline.
 
 ##### Distortion correction
-**Image distortion** occurs when a camera looks at 3D objects in the real world and transforms them into a 2D image; this transformation isn’t perfect. Distortion actually changes what the shape and size of these 3D objects appear to be. So, the first step in analyzing camera images, is to undo this distortion so that you can get correct and useful information out of them.
+**Image distortion** occurs when a camera looks at 3D objects in the real world and transforms them into a 2D image; this transformation isn’t perfect. Distortion actually changes what the shape and size of these 3D objects appear to be. So, the first step in analyzing camera images is to undo this distortion so that you can get correct and useful information out of them.
 
-`cv2.undistort` can be used to corret distortion of images. Following are the sample images to show undistortion
+`cv2.undistort` can be used to corret distortion of images. Following are the sample images to show undistortion.
 
 ![](resources/undistorted.png)
 ![](resources/undistort-2.png)
 
 Perspective transformation
 ---
-A perspective transform maps the points in a given image to different, desired, image points with a new perspective. The perspective transform you’ll be most interested in is a bird’s-eye view transform that let’s us view a lane from above; this will be useful for calculating the lane curvature later on. Aside from creating a bird’s eye view representation of an image, a perspective transform can also be used for all kinds of different view points.
+A perspective transform maps the points in a given image to different, desired, image points with a new perspective. The perspective transform is a bird’s-eye view transform that lets us view a lane from above; this will be useful for calculating the lane curvature later on. Aside from creating a bird’s eye view representation of an image, a perspective transform can also be used for all kinds of different viewpoints.
 
-Perspective transfomation can be done using following steps.
+Perspective transformation can be done using the following steps.
 ##### Step 01: 
-Select four source coordation points from given image and these points were used for all other as well with a generic adgusment.  
+Select four source coordination points from a given image, and these points were used for all other test images.  
 Selected **source** points:  
 `p1 = (575, 465)` `p2 = (705, 465)` `p3 = (255, 685)` `p4 = (1050, 685)`   
 Selected **destination** coordinates.  
 `pd1 =(450, 0)` `pd2 = (width - 450, 0)` `pd3 = (450, height)` `pd4 = (width - 450, height)`  
-Here height and width are recpectively number of rows and number of colomn in an raw image. Following is an image with drawan polygon by using **source** points.
+Here height and width are respectively numbers of rows and number of columns in a raw image. Following is an image with a drawn polygon by using **source** points.
 
 ![](resources/selected-points-image.png )
 
@@ -121,13 +121,13 @@ def unwarp(img, source=src, desctination=dst):
     return warped, M, Minv
     
 ```    
-Here is the sample result of above function.
+Here is the sample result of the above function.
 
 ![](resources/unwarped-img.png)
 
-Working with colour spaces and channels
+Working with color spaces and channels
 ---
-On road lane line images, we have to detect two major colors such that yellow and white. By seeing bellow color venn diagram we can get some idea about how other colors are making with three major colors. I have tested with four color spaces sush that RGB, HSV, HLS, and LAB. 
+We have to detect two major colors such that yellow and white on-road lane line images. By seeing the below color Venn diagram, we can get some idea about how other colours are making with three major colors. I have tested four-color spaces such that RGB, HSV, HLS, and LAB. 
 
 ![](resources/color-venn-dia.png)
 
@@ -169,7 +169,7 @@ def extract_lab_color_spaces(uwimg):
     return unwarp_L, unwarp_A,unwarp_B
     
 ```    
-I have applied above functions to detect lane lines edges from road images. Following are the results that I got with each color filters. I have tested two different images to detect lane lines.
+I have applied the above functions to detect lane lines edges from road images. Following are the results that I got with each color filter. I have tested two different images to detect lane lines.
 
 ##### RGB color space results
 ![](resources/rgb-test-1.png)
@@ -187,16 +187,16 @@ I have applied above functions to detect lane lines edges from road images. Foll
 ![](resources/lab-test-1.png)
 ![](resources/lab-test-2.png)
 
-##### Color spaces conclutions
-**LAB** color space **B** was perfomed well to detect yellow lane lines from the roads images. For white lane lines, we have few options to select color channels. **HLS** **L** was perfomed well to detect white lane lines from road images.
+##### Color spaces conclusions
+**LAB** color space **B** was performed well to detect yellow lane lines from the road images. For white lane lines, we have few options to select color channels. **HLS** **L** was performed well to detect white lane lines from road images.
 
-With the above conclutions, I select to only two color channels to apply gredient threshold filters. 
+With the above conclusion, I select only two color channels to apply gradient threshold filters. 
 
 ### Gradient threshold
-When we are detecting edges from road images, there are ohter edges will be detected with Canny edge detection. We have to minimize those unnecessary edge detections. One of the improved version of Canny edge detection is **Sobel operator**[[Wikipedia](https://en.wikipedia.org/wiki/Sobel_operator)].  Applying the Sobel operator to an image is a way of taking the derivative of the image in the x or y direction.
+When we are detecting edges from road images, the Canny edge detection will detect all other edges. We have to minimize those unnecessary edge detections. One of the improved version of Canny edge detection is **Sobel operator**[[Wikipedia](https://en.wikipedia.org/wiki/Sobel_operator)].  Applying the Sobel operator to an image is a way of taking the derivative of the image in the x or y direction.
 
 #### Sobel absolute threshold
-Following function was used to apply sobel absolute filter
+The following function was used to apply Sobel absolute filter
 
 ```python
 def abs_sobel_thresh(gray, orient='x', thresh_min=0, thresh_max=255):
@@ -228,13 +228,13 @@ def abs_sobel_thresh(gray, orient='x', thresh_min=0, thresh_max=255):
     return binary_sobel
 
 ```
-Following are the some of results after applying above filter.
+Following are the some of results after applying the above filter.
 
 ![](resources/sobel-abs-test-3.png)
 ![](resources/sobel-abs-test-2.png)
 
 #### Sobel direction of the gradient
-The magnitude, or absolute value, of the gradient is just the square root of the squares of the individual x and y gradients. For a gradient in both the **x** and **y** directions, the magnitude is the square root of the sum of the squares. Following function was used to calculate direction of the gradient.
+The magnitude or absolute value of the gradient is just the square root of the squares of the individual x and y gradients. For a gradient in both the **x** and **y** directions, the magnitude is the square root of the sum of the squares. The following function was used to calculate the direction of the gradient.
 
 ```python
 def dir_threshold(gray, sobel_kernel=3, thresh=(0, np.pi/2)):
@@ -255,11 +255,12 @@ def dir_threshold(gray, sobel_kernel=3, thresh=(0, np.pi/2)):
     # Return the binary image
     return binary_output
 ```
-And following were a few results afater applying sobel gradient direction filter.
+And the following were a few results after applying a Sobel gradient direction filter.
+
 ![](resources/sg-test1.png)
 ![](resources/sg-test2.png)
 
-After applying above sobel gradient and sobel absolute filter, we can notice how both filters results are varing for two colors such that yellow and white. Now we can combine both filters and can see how combine filter is working for both yellow and white lane lines. Following function was used to combine filters.
+After applying the above Sobel gradient and Sobel absolute filter, we can notice how both filters' results are varying for two colors such that yellow and white. Now we can combine both filters and can see how the combined filter is working for both yellow and white lane lines. The following function was used to combine filters.
 
 ```python
 def combine_thresholds(unwarp_img, gray, mag_kernel, mag_thresh, dir_thresh, dir_kernel ):
@@ -279,15 +280,15 @@ def combine_thresholds(unwarp_img, gray, mag_kernel, mag_thresh, dir_thresh, dir
     # A combine binary image 
     return combined
 ```
-Following are the few results for combine filter.
+Following are the few results for the combined filter.
 
 ![](resources/combine-1.png)
 ![](resources/combine-2.png)
 
 #### Normalize color channels
-HLS L channel and LAB B was perfomed well to detect yellow and white lane lines, now we can nomalize both color channels to smooth edges. Following functions were used to nomalize color channels.
+HLS L channel and LAB B was performed well to detect yellow and white lane lines. Now we can normalize both color channels to smooth edges. Following functions were used to normalize color channels.
 
-######  Nomalize HLS L color channel
+######  Normalize HLS L color channel
 
 ```python
 def hls_l_nomalize(img, thresh=(220, 255)):
@@ -305,7 +306,7 @@ def hls_l_nomalize(img, thresh=(220, 255)):
 
 ```
 
-######  Nomalize LAB B color channel
+######  Normalize LAB B color channel
 
 ```python
 def lab_b_nomalize(unwarped_img, thresh=(190,255)):
@@ -323,7 +324,7 @@ def lab_b_nomalize(unwarped_img, thresh=(190,255)):
     return binary_output
 ```
 
-Following are the results of above filters respectively.
+Following are the results of the above filters respectively.
 
 ![](resources/thersh-1.png)
 ![](resources/thersh-2.png )
@@ -351,17 +352,17 @@ def pipeline(p_img):
     return combined, Minv
     
 ```
-Following are the a few samples of pipeline output.
+Following are a few samples of pipeline output.
 
 ![](resources/pipeline-1.png)
 ![](resources/pipeline-2.png)
 
-Above pipeline can be used to contine next steps image processing.
+The above pipeline can be used to continue next steps in image processing.
 
 
 Detect lane boundaries
 ---
-To detect lane boundaries we can peaks in a histogram. As we notice around the lane boundaries average white pixel density is higer than comparativelty other regions. Using following function we can generate a histogram data points from a binary image.
+To detect lane boundarie, we can peak in a histogram. As we notice around the lane boundaries, the average white pixel density is higher than comparatively other regions. Using the following function, we can generate histogram data points from a binary image. 
 
 ```python
 def hist(img):
@@ -381,13 +382,13 @@ Following are the image and it's relevant lane line boundaries histogram
 ![](resources/his-img.png) ![](resources/histogram.png)
 
 
-Pipeline's extracted binary image, pixels are either 0 or 1, so the two most prominent peaks in this histogram will be good indicators of the x-position of the base of the lane lines. We can use that as a starting point for where to search for the lines. From that point, we can use a sliding window, placed around the line centers, to find and follow the lines up to the top of the frame.
+The pipeline's extracted binary image, pixels are either 0 or 1, so the two most prominent peaks in this histogram will be good indicators of the x-position of the base of the lane lines. We can use that as a starting point for where to search for the lines. From that point, we can use a sliding window, placed around the line centers to find and follow the lines up to the top of the frame.
 
 #### Implement sliding windows and fit a polynomial
 We can use the two highest peaks from our histogram as a starting point for determining where the lane lines are, and then use sliding windows moving upward in the image (further along the road) to determine where the lane lines go.
 
 ###### Split the histogram for the two lines
-The first step we'll take is to split the histogram into two sides, one for each lane line. Following are the used functions' utilities to split histogram for the two lane lines.
+The first step we'll take is to split the histogram into two sides, one for each lane line. Following are the used functions' utilities to split histogram for the two-lane lines.
 
 ```python
 # Take a histogram of the bottom half of the image
@@ -481,7 +482,7 @@ Following are showing original image and expected output after applying above fu
 
 ![](resources/sliding-wind-original.png) ![](resources/sliding-windows.png)
 
-Now we can use above frames to fit left and right lane lines with second order polynomial fuctions. Following fuction was used to fit second order polynomials.
+Now we can use the above frames to fit left and right lane lines with second-order polynomial functions. The following function was used to fit second-order polynomials.
 
 ```python
 def polyfit_using_prev_fit(binary_warped, left_fit_prev, right_fit_prev):
@@ -510,17 +511,17 @@ def polyfit_using_prev_fit(binary_warped, left_fit_prev, right_fit_prev):
     return left_fit_new, right_fit_new, left_lane_inds, right_lane_inds
 ```
 
-The `polyfit_using_prev_fit` function performs basically the same task, but alleviates much difficulty of the search process by leveraging a previous fit and only searching for lane pixels within a certain range of that fit. And following are above function resuls.
+The `polyfit_using_prev_fit` function performs basically the same task. But alleviates much difficulty of the search process by leveraging a previous fit and only searching for lane pixels within a certain range of that fit. And following is the above function results.
 
 ![](resources/sliding-wind-original.png) ![](resources/polynomial.png)
 
 Determine curvature of the lane line
 ---
-In this step we'll find curvature of left and right lanes. By using `polyfit_using_prev_fit` function we can locate lane line pixels, used their **x** and **y** pixel position to fit a secondorder polynomial curve.
+In this step, we'll find the curvature of the left and right lanes. By using the `polyfit_using_prev_fit` function we can locate lane line pixels, used their **x** and **y** pixel positions to fit a  second-order polynomial curve.
 
 ![](resources/second-order-polynomial.png)
 
-We are fitting for `f(y)` rather than `f(x)`, because the lane lines in the warped image(bird-eye view) are near vertical and may have the same x value for more than one y value.
+We are fitting for `f(y)` rather than `f(x)` because the lane lines in the warped image(bird-eye view) are near vertical and may have the same x value for more than one y value.
 
 ![](resources/color-fit-lines.jpg)
 Source: https://video.udacity-data.com/topher/2016/December/58449a23_color-fit-lines/color-fit-lines.jpg
@@ -531,14 +532,14 @@ The radius of curvature at any point x of the function x=f(y) is given as follow
 
 ![](resources/radius-of-curvature.png)
 
-The following Python snipet was used to calculate left and right lane lines' radius of curvatures. 
+The following Python snippet was used to calculate the left and right lane lines' radius of curvatures. 
 
 ```python
 left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
 right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
 ```
 
-And following snipet was used to calculate distance from center.
+And the following snippet was used to calculate distance from the center.
 
 ```python
 car_position = bin_img.shape[1]/2
@@ -551,7 +552,7 @@ center_dist = (car_position - lane_center_position) * xm_per_pix
 Note: The complete function can be found from [`Advanced_Lane_Finding.ipynb`](Advanced_Lane_Finding.ipynb) file and the function will be `calc_curv_rad_and_center_dist`. 
 
 #### Draw lane and text data onto road images
-Following functions were used to finalize road lane polygon drawging and result were attached after the code snipets. 
+Following functions were used to finalize road lane polygon drawing and results were attached after the code snippets. 
 
 ###### Draw lane lines
 ```python
@@ -588,7 +589,7 @@ def draw_lane(original_img):
     return result
 ```    
 
-Following function was used to show radius curvature and distance from center values.
+The following function was used to show radius curvature and distance from center values.
 
 ```python
 def draw_data(original_img, curv_rad, center_dist):
@@ -605,13 +606,14 @@ def draw_data(original_img, curv_rad, center_dist):
     abs_center_dist = abs(center_dist)
     text = '{:04.3f}'.format(abs_center_dist) + 'm ' + direction + ' of center'
     cv2.putText(new_img, text, (40,120), font, 1.5, (200,255,155), 2, cv2.LINE_AA)
+    
     return new_img
 ```   
 
 ![](resources/final-img.png)
 
 #### Video pipeline
-After drawing lane lines, the final pipeline was build with following functions and the class. The outputs were stored at `[output_videos](/output_videos)` directory and I provided those external uploaded links under *Results* section.
+After drawing lane lines, the final pipeline was built with the following functions and the class. The outputs were stored at the `[output_videos](/output_videos)` directory and I provided those external uploaded links under the *Results* section.
 
 ```python
 # Define a class to receive the characteristics of each line detection
@@ -716,18 +718,18 @@ def plot_fit_onto_img(img, fit, plot_color):
 ```    
 Results
 ---
-After applying above individual functions, we can create image processing pipeline and then it can be applied to process video inputs. There utility functions to finalize project challenge video. Using following link final project challenge and other challenges output can be found.
+After applying the above individual functions, we can create an image processing pipeline, and then it can be applied to process video inputs. Their utility functions to finalize project challenge video. Using the following link final project challenge and other challenges output can be found.
 
 |[Project Video](https://youtu.be/sY47Zs5aN0c)|[Challenge Video](https://youtu.be/KhoOvG-FdAU)|[Hard Challenge Video](https://youtu.be/J_VD-1X547o)|
 |---------------------------------------------|-----------------------------------------------|----------------------------------------------------|
 
 Discussions
 ---
-This is was a great experince to play with polynomial approch to detect lane lines. But lightling is the worst case for edge etections. Even there were test images without any kind road lane lines, with clear two color margins were detected as road lane lines.  
+This is was a great experience to play with the polynomial approach to detect lane lines. But lighting is the worst case for edge detections. Even there were test images without any kind of road lane lines, edges were detected due to shadow boundaries. 
 
-Color thresholding was somewhat helped to detect yellow lane lines, LAB B color channel was helped to detect yellow lane lines. For white lane lines,there were multiple color channels supported with clear edges, due to lightning issues HSL S was selected to combine white and yellow lanes.  
+Color thresholding was used to detect lane lines, LAB B color channel was helped to detect yellow lane lines. For white lane lines, there were multiple color channels supported with clear edges, due to lightning issues HSL S was selected to combine white and yellow lanes.  
 
-Histogram based search algorithm was supported to find curve radius, if we can try to annotate images using neaural network approches that prebuild model can be used to speedup our algorithm. Specially to process a small video clip will take some considerable time, but real world case the vehicle speed will be slow down very badly to take time to do image processing pipeline and decision making time will be increaded due to image processing time. 
+Histogram based search algorithm was supported to find curve radius if we can try to annotate images using neural network approaches that prebuild model can be used to speed up our algorithm. Especially to process a small video clip will take some considerable time, but in a real-world case, the vehicle speed will be slow down very badly to take time to do the image processing pipeline and decision-making time will be increased due to image processing time.  
 
 References
 ---
