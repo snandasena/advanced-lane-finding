@@ -20,14 +20,15 @@ The goals / steps of this project are the following:
 
 This project consists of the following major files and folders.
 
+* README.md - **Writeup for this project**
 * Advanced_Lane_Finding.ipynb - Main source file
 * Advanced_Lane_Finding.html - HTML extractor for main source file output. This can be used to see outputs without running Jupyter notebook
+* output_videos - Output results 
 * camera_cal - Camera calibration images 
 * input_videos - Input videos
 * resources - Saved inputs  and outputs for writeup
 * test_images -  Test road images
 * utils - Test and R&D scripts 
-* README.md - **Writeup for this project**
 * advanced_lane_finding.py - Main pipeline debuger file[incomplete]
 
 [Project running instructions](HOW_TO_RUN.md)
