@@ -723,9 +723,9 @@ After applying above individual functions, we can create image processing pipeli
 
 Discussions
 ---
-This is was a great experince to play with polynomial approch to detect lane lines. But lightling is the worst case for edge etections. Even there were test images without any kind road lane lines, with clear two color margins were detected as road lane lines.  
+This is was a great experince to play with polynomial approch to detect lane lines. But lightling is the worst case for edge detections. Even there were test images without any kind road lane lines edges were detected due light and dark color planes.
 
-Color thresholding was somewhat helped to detect yellow lane lines, LAB B color channel was helped to detect yellow lane lines. For white lane lines,there were multiple color channels supported with clear edges, due to lightning issues HSL S was selected to combine white and yellow lanes.  
+Color thresholding was helped to detect yellow lane lines, LAB B color channel was helped to detect yellow lane lines. For white lane lines,there were multiple color channels supported with clear edges, due to lightning issues HSL S was selected to combine white and yellow lanes.  
 
 Histogram based search algorithm was supported to find curve radius, if we can try to annotate images using neaural network approches that prebuild model can be used to speedup our algorithm. Specially to process a small video clip will take some considerable time, but real world case the vehicle speed will be slow down very badly to take time to do image processing pipeline and decision making time will be increaded due to image processing time. 
 
