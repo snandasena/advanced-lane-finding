@@ -132,6 +132,3 @@ dmypy.json
 tmp/
 resources/*.p
 
-calibration.p
-project.ipynb
-output_videos/
